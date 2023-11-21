@@ -1,4 +1,7 @@
 ﻿#include "VulkanUtils.h"
+
+#include <stdexcept>
+#include <fstream>
 #include "VulkanDevice.h"
 #include "Vertex.h"
 

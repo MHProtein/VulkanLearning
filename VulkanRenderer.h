@@ -9,6 +9,8 @@
 
 namespace my_vulkan
 {
+	class ImguiAPI;
+	class VulkanContext;
 	class VulkanWindow;
 	class VulkanComputePipeline;
 	class VulkanImage;
@@ -24,21 +26,19 @@ namespace my_vulkan
 	class VulkanRenderer
 	{
 	public:
-		VulkanRenderer(const std::shared_ptr<VulkanDevice>& device,
-			const std::shared_ptr<VulkanSwapChain> swapChain, VkCommandPool& commandPool, const VkRenderPass& renderPass);
+		VulkanRenderer(my_vulkan::VulkanContext* context);
 
 		void createFramebuffers(const VkDevice& device, const std::shared_ptr<VulkanSwapChain> swapChain, const VkRenderPass& renderPass);
 		void createCommandBuffer(const VkDevice& device, VkCommandPool& commandPool);
 		void createSynchronizationObjects(const VkDevice& device);
 
 		void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, const std::shared_ptr<VulkanGraphicsPipeline>& pipeline,
-			const VkExtent2D& swapChainExtent, const std::vector<std::shared_ptr<Object>>& objects);
+			const VkExtent2D& swapChainExtent, ImguiAPI* imgui, const std::vector<std::shared_ptr<Object>>& objects);
 
 		void recordComputeCommandBuffer(VkCommandBuffer commandBuffer, const std::shared_ptr<VulkanComputePipeline>& computePipeline,
 			const std::shared_ptr<VulkanDescriptors>& descriptors);
 
-		void draw(VulkanWindow& window, std::shared_ptr<VulkanSwapChain>& swapChain, const std::shared_ptr<VulkanGraphicsPipeline>& pipeline,
-			const std::shared_ptr<VulkanDevice>& device, const VkSurfaceKHR& surface, VkCommandPool& commandPool, const std::vector<std::shared_ptr<Object>>& objects);
+		void draw(my_vulkan::VulkanContext* context, ImguiAPI* imgui, const std::vector<std::shared_ptr<Object>>& objects);
 
 		void recreateSwapChain(std::shared_ptr<VulkanSwapChain> swapChain, GLFWwindow* window, const std::shared_ptr<VulkanDevice>& device, 
 			const VkSurfaceKHR& surface, const VkRenderPass& renderPass, VkCommandPool& commandPool);
@@ -61,6 +61,8 @@ namespace my_vulkan
 		std::shared_ptr<VulkanImage> colorRecources;
 		std::shared_ptr<VulkanDepthResources> depthResources;
 		std::array<VkClearValue, 2> clearValues;
+
+	
 	};
 }
 

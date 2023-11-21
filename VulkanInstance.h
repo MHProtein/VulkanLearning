@@ -1,8 +1,6 @@
 #pragma once
 
-#include <stdexcept>
 #include <vector>
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 namespace my_vulkan
 {

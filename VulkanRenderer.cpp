@@ -1,9 +1,8 @@
 #include "VulkanRenderer.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include <iostream>
 #include <stdexcept>
 #include "Vertex.h"
-#include "FirstApp.h"
+#include "VulkanContext.h"
 #include "VulkanDescriptors.h"
 #include "VulkanDevice.h"
 #include "VulkanComputePipeline.h"
@@ -16,23 +15,20 @@
 #include "Model.h"
 #include "VulkanImage.h"
 #include "VulkanUtils.h"
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_vulkan.h"
 #include <imconfig.h>
+#include "ImguiAPI.h"
 
-my_vulkan::VulkanRenderer::VulkanRenderer(const std::shared_ptr<VulkanDevice>& device, const std::shared_ptr<VulkanSwapChain> swapChain, VkCommandPool& commandPool, 
-                                          const VkRenderPass& renderPass) : maxRenderImages(MAX_RENDER_IMAGES), currentFrame(0)
+my_vulkan::VulkanRenderer::VulkanRenderer(my_vulkan::VulkanContext* context) : maxRenderImages(MAX_RENDER_IMAGES), currentFrame(0)
 {
-	VkFormat colorFormat = swapChain->getSwapChainFormat().format;
-	colorRecources = std::make_shared<VulkanImage>(device, swapChain->getSwapChainExtent().width, swapChain->getSwapChainExtent().height, 1, 1, 1, VK_IMAGE_TYPE_2D, 
+	VkFormat colorFormat = context->swapChain->getSwapChainFormat().format;
+	colorRecources = std::make_shared<VulkanImage>(context->device, context->swapChain->getSwapChainExtent().width, context->swapChain->getSwapChainExtent().height, 1, 1, 1, VK_IMAGE_TYPE_2D,
 		colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_SHARING_MODE_EXCLUSIVE,
-		device->getMsaaSamples(), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+		context->device->getMsaaSamples(), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-	depthResources = std::make_shared<VulkanDepthResources>(device, swapChain->getSwapChainExtent(), commandPool);
-	createFramebuffers(device->getLogicalDevice(), swapChain, renderPass);
-	createCommandBuffer(device->getLogicalDevice(), commandPool);
-	createSynchronizationObjects(device->getLogicalDevice());
+	depthResources = std::make_shared<VulkanDepthResources>(context->device, context->swapChain->getSwapChainExtent(), context->commandPool);
+	createFramebuffers(context->device->getLogicalDevice(), context->swapChain, context->graphicsPipeline->getRenderPass());
+	createCommandBuffer(context->device->getLogicalDevice(), context->commandPool);
+	createSynchronizationObjects(context->device->getLogicalDevice());
 	
 	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
 	clearValues[1].depthStencil = { 1.0f, 0 };
@@ -112,7 +108,7 @@ void my_vulkan::VulkanRenderer::createSynchronizationObjects(const VkDevice& dev
 }
 
 void my_vulkan::VulkanRenderer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex, const std::shared_ptr<VulkanGraphicsPipeline>& pipeline,
-	const VkExtent2D& swapChainExtent, const std::vector<std::shared_ptr<Object>>& objects)
+	const VkExtent2D& swapChainExtent, ImguiAPI* imgui, const std::vector<std::shared_ptr<Object>>& objects)
 {
 
 	VkCommandBufferBeginInfo commandBufferBeginInfo{};
@@ -157,17 +153,11 @@ void my_vulkan::VulkanRenderer::recordCommandBuffer(VkCommandBuffer commandBuffe
 		{
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 1, 1,
 				&object->textures[i]->descriptor->getDescriptorSets().at(currentFrame), 0, nullptr);
-			object->models[i]->Render(commandBuffer);
+			object->meshes[i]->Render(commandBuffer);
 		}
 	}
 
-	ImGui_ImplVulkan_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-	ImGui::ShowDemoWindow();
-
-	ImGui::Render();
-	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
+	imgui->updateImgui(commandBuffer, objects);
 
 	vkCmdEndRenderPass(commandBuffer);
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
@@ -196,19 +186,18 @@ void my_vulkan::VulkanRenderer::recordComputeCommandBuffer(VkCommandBuffer comma
 	}
 }
 
-void my_vulkan::VulkanRenderer::draw(VulkanWindow& window, std::shared_ptr<VulkanSwapChain>& swapChain, const std::shared_ptr<VulkanGraphicsPipeline>& pipeline,
-	const std::shared_ptr<VulkanDevice>& device, const VkSurfaceKHR& surface, VkCommandPool& commandPool, const std::vector<std::shared_ptr<Object>>& objects)
+void my_vulkan::VulkanRenderer::draw(my_vulkan::VulkanContext* context, ImguiAPI* imgui, const std::vector<std::shared_ptr<Object>>& objects)
 {
 	VkSubmitInfo submitInfo{};
 
-	vkWaitForFences(device->getLogicalDevice(), 1, &inFlightFences[currentFrame], VK_FALSE, UINT64_MAX);
+	vkWaitForFences(context->device->getLogicalDevice(), 1, &inFlightFences[currentFrame], VK_FALSE, UINT64_MAX);
 
 	uint32_t imageIndex;
-	VkResult result = vkAcquireNextImageKHR(device->getLogicalDevice(), swapChain->getSwapChain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(context->device->getLogicalDevice(), context->swapChain->getSwapChain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
-		recreateSwapChain(swapChain, window.window, device, surface, pipeline->getRenderPass(), commandPool);
+		recreateSwapChain(context->swapChain, context->wind.window, context->device, context->surface, context->graphicsPipeline->getRenderPass(), context->commandPool);
 		return;
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -216,13 +205,9 @@ void my_vulkan::VulkanRenderer::draw(VulkanWindow& window, std::shared_ptr<Vulka
 		throw std::runtime_error("failed to acquire next image");
 	
 	}
-	for (const auto & object : objects)
-	{
-		object->uniformBuffers->updateUniformBuffer(currentFrame, swapChain->getSwapChainExtent());
-	}
-	recordCommandBuffer(commandBuffers[currentFrame], imageIndex, pipeline, swapChain->getSwapChainExtent(), objects);
+	recordCommandBuffer(commandBuffers[currentFrame], imageIndex, context->graphicsPipeline, context->swapChain->getSwapChainExtent(), imgui, objects);
 
-	vkResetFences(device->getLogicalDevice(), 1, &inFlightFences[currentFrame]);
+	vkResetFences(context->device->getLogicalDevice(), 1, &inFlightFences[currentFrame]);
 
 	VkPipelineStageFlags waitDstStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
@@ -237,22 +222,22 @@ void my_vulkan::VulkanRenderer::draw(VulkanWindow& window, std::shared_ptr<Vulka
 	submitInfo.pWaitDstStageMask = &waitDstStageMask;
 
 
-	vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]);
+	vkQueueSubmit(context->device->getGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]);
 
 	VkPresentInfoKHR presentInfo{};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = &swapChain->getSwapChain();
+	presentInfo.pSwapchains = &context->swapChain->getSwapChain();
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = &renderFinishedSemaphores[currentFrame];
 
-	result = vkQueuePresentKHR(device->getPresentQueue(), & presentInfo);
+	result = vkQueuePresentKHR(context->device->getPresentQueue(), & presentInfo);
 
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.framebufferResized)
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || context->wind.framebufferResized)
 	{
-		window.framebufferResized = false;
-		recreateSwapChain(swapChain, window.window, device, surface, pipeline->getRenderPass(), commandPool);
+		context->wind.framebufferResized = false;
+		recreateSwapChain(context->swapChain, context->wind.window, context->device, context->surface, context->graphicsPipeline->getRenderPass(), context->commandPool);
 	}
 	else if(result != VK_SUCCESS)
 		throw std::runtime_error("failed to present image!");

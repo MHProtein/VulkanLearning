@@ -1,5 +1,8 @@
 #include "VulkanInstance.h"
 
+#include <stdexcept>
+#include <GLFW/glfw3.h>
+
 
 my_vulkan::VulkanInstance::VulkanInstance(bool enableValidationLayer, const std::vector<const char*>& validationLayers)
 {

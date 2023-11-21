@@ -8,8 +8,6 @@
 #include "VulkanDepthResources.h"
 #include "VulkanSwapChain.h"
 #include "VulkanUtils.h"
-#include "imgui.h"
-#include "backends/imgui_impl_vulkan.h"
 
 my_vulkan::VulkanGraphicsPipeline::VulkanGraphicsPipeline(const std::shared_ptr<VulkanDevice>& device, 
 	const std::shared_ptr<VulkanSwapChain>& swapChain, VkCommandPool& commandPool)

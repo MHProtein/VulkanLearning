@@ -7,13 +7,13 @@
 #include "Texture.h"
 #include "Vertex.h"
 
-my_vulkan::Model::Model(const std::string& model_path, const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool) : modelPath(model_path)
+my_vulkan::Mesh::Mesh(const std::string& model_path, const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool) : modelPath(model_path)
 {
 	loadModel();
 	createBuffers(device, commandPool);
 }
 
-void my_vulkan::Model::loadModel()
+void my_vulkan::Mesh::loadModel()
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -53,18 +53,18 @@ void my_vulkan::Model::loadModel()
 	}
 }
 
-void my_vulkan::Model::createBuffers(const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool)
+void my_vulkan::Mesh::createBuffers(const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool)
 {
 	VulkanUtils::createVertexBuffer(vertices, vertexBuffer, vertexBufferMemory, device, commandPool);
 	VulkanUtils::createIndexBuffer(indices, indexBuffer, indexBufferMemory, device, commandPool);
 }
 
-std::vector<my_vulkan::Vertex> my_vulkan::Model::getVertices() const
+std::vector<my_vulkan::Vertex> my_vulkan::Mesh::getVertices() const
 {
 	return vertices; 
 }
 
-void my_vulkan::Model::destroyModel(const VkDevice& device)
+void my_vulkan::Mesh::destroyModel(const VkDevice& device)
 {
 	vkDestroyBuffer(device, vertexBuffer, nullptr);
 	vkFreeMemory(device, vertexBufferMemory, nullptr);
@@ -72,7 +72,7 @@ void my_vulkan::Model::destroyModel(const VkDevice& device)
 	vkFreeMemory(device, indexBufferMemory, nullptr);
 }
 
-void my_vulkan::Model::Render(const VkCommandBuffer& commandBuffer)
+void my_vulkan::Mesh::Render(const VkCommandBuffer& commandBuffer)
 {
 	VkBuffer vertexBuffers[] = { vertexBuffer };
 	VkDeviceSize offsets[] = { 0 };

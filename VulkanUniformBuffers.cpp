@@ -12,7 +12,7 @@
 #include "Vertex.h"
 #include "VulkanUtils.h"
 
-my_vulkan::VulkanUniformBuffers::VulkanUniformBuffers(const std::shared_ptr<VulkanDevice>& device, VulkanUBOFor type) : type(type), count(0)
+my_vulkan::VulkanUniformBuffers::VulkanUniformBuffers(const std::shared_ptr<VulkanDevice>& device, VulkanUBOFor type) : type(type)
 {
 	createUniformBuffers(device, type);
 }
@@ -47,55 +47,9 @@ void my_vulkan::VulkanUniformBuffers::createUniformBuffers(const std::shared_ptr
 	//Not having to map the buffer every time we need to update it increases performances
 }
 
-void my_vulkan::VulkanUniformBuffers::updateUniformBuffer(uint32_t currentImage, VkExtent2D swapChainExtent)
+void my_vulkan::VulkanUniformBuffers::updateUniformBuffer(uint32_t currentImage, UniformBufferObject* ubo)
 {
-	UniformBufferObject ubo{};
-	ImVec2 pos2;
-	if (ImGui::IsMouseClicked(0) && ImGui::GetMouseClickedCount(0) - count == 1)
-	{
-		count++;
-		lastRecordedMousePos = { ImGui::GetMousePos().x, ImGui::GetMousePos().y };
-	}
-	if (ImGui::IsMouseClicked(2) && ImGui::GetMouseClickedCount(2) - count == 1)
-	{
-		count++;
-		lastRecordedMousePos = { ImGui::GetMousePos().x, ImGui::GetMousePos().y };
-	}
-
-	if ((ImGui::IsMouseDown(0) && ImGui::IsMouseDragging(0)))
-	{
-		pos2 = ImGui::GetMousePos();
-		float deltaX = 0.010f * (pos2.x - lastRecordedMousePos.x) / 1920.0f;
-		float deltaY = 0.010f * (pos2.y - lastRecordedMousePos.y) / 1080.0f;
-		Camera::angle1 += deltaX;
-		Camera::angle2 += deltaY;
-		float a1 = Camera::angle1;
-		float a2 = Camera::angle2;
-		Camera::t = Camera::radius * cos(a2);
-		Camera::camX = Camera::t * cos(a1);
-		Camera::camY = Camera::t * sin(a1);
-		Camera::camZ = Camera::radius * sin(a2);
-	}
-
-	if ((ImGui::IsMouseDown(2) && ImGui::IsMouseDragging(2)))
-	{
-		pos2 = ImGui::GetMousePos();
-		Camera::radius += 0.005f * (pos2.y - lastRecordedMousePos.y) / 1080.0f;
-		float a1 = Camera::angle1;
-		float a2 = Camera::angle2;
-		Camera::t = Camera::radius * cos(a2);
-		Camera::camX = Camera::t * cos(a1);
-		Camera::camY = Camera::t * sin(a1);
-		Camera::camZ = Camera::radius * sin(a2);
-	}
-
-	ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-	ubo.view = glm::lookAt(glm::vec3(Camera::camX, Camera::camY, Camera::camZ), glm::vec3(0.0F, 0.0F, 2.0f), glm::vec3(0.0, 0.0, 1.0f));
-	ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 100.0f);
-	ubo.proj[1][1] *= -1;
-
-	memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+	memcpy(uniformBuffersMapped[currentImage], ubo, sizeof(UniformBufferObject));
 }
 
 void my_vulkan::VulkanUniformBuffers::DestroyVulkanUniformBuffers(const VkDevice& device)

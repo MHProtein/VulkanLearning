@@ -467,7 +467,7 @@
       <PreprocessorDefinitions>ImTextureID=ImU64;_MBCS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Libraries\imgui-master;$(SolutionDir)Libraries\tinyobjloader-release;$(SolutionDir)Libraries\stb;$(SolutionDir)Libraries\GLFW\include;$(SolutionDir)Libraries\GLM;$(SolutionDir)Libraries\VulkanSDK\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
@@ -524,6 +524,10 @@
     <ClCompile Include="..\Libraries\imgui-master\imgui_draw.cpp" />
     <ClCompile Include="..\Libraries\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\Libraries\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="Arona.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ImguiAPI.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Vertex.cpp" />
@@ -536,7 +540,7 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VulkanUniformBuffers.cpp" />
-    <ClCompile Include="FirstApp.cpp" />
+    <ClCompile Include="VulkanContext.cpp" />
     <ClCompile Include="VulkanDevice.cpp" />
     <ClCompile Include="VulkanGraphicsPipeline.cpp" />
     <ClCompile Include="VulkanInstance.cpp" />
@@ -553,6 +557,10 @@
     <ClInclude Include="..\Libraries\imgui-master\imstb_rectpack.h" />
     <ClInclude Include="..\Libraries\imgui-master\imstb_textedit.h" />
     <ClInclude Include="..\Libraries\imgui-master\imstb_truetype.h" />
+    <ClInclude Include="Arona.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="ImguiAPI.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Vertex.h" />
@@ -564,7 +572,7 @@
     <ClInclude Include="VulkanImage.h" />
     <ClInclude Include="VulkanUtils.h" />
     <ClInclude Include="VulkanUniformBuffers.h" />
-    <ClInclude Include="FirstApp.h" />
+    <ClInclude Include="VulkanContext.h" />
     <ClInclude Include="VulkanDevice.h" />
     <ClInclude Include="VulkanGraphicsPipeline.h" />
     <ClInclude Include="VulkanInstance.h" />

@@ -1,14 +1,11 @@
 ﻿#pragma once
 
-#include <array>
-#include <fstream>
 #include <optional>
 #include <vector>
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 #include <memory>
-#include <cmath>
-#include <iostream>
+#include <string>
 
 namespace my_vulkan
 {
@@ -17,23 +14,8 @@ namespace my_vulkan
 	const uint32_t MAX_RENDER_IMAGES = 2;
 	const uint32_t MODEL_COUNT = 6;
 	const uint32_t PARTICLE_COUNT = 1000;
-
-	struct Camera
-	{
-	
-		inline static float initCamX = 2.0f;
-		inline static float initCamY = 2.0f;
-		inline static float initCamZ = 1.0f;
-		inline static float camX = initCamX;
-		inline static float camY = initCamY;
-		inline static float camZ = initCamZ;
-		inline static float radius = distance(glm::vec3(initCamX, initCamY, initCamZ), glm::vec3(0.0f, 0.0f, 0.0f));
-		inline static float angle1 = acos(glm::dot(normalize(glm::vec3(initCamX, initCamY, 0.0f)),
-			normalize(glm::vec3(1.0f, 0.0f, 0.0f))));
-		inline static float angle2 = acos((glm::dot(normalize(glm::vec3(initCamX, initCamY, 0.0f)), 
-			normalize(glm::vec3(initCamX, initCamY, initCamZ)))));
-		inline static float t = radius * cos(angle2);
-	};
+	const uint32_t WIDTH = 1920;
+	const uint32_t HEIGHT = 1080;
 
 	enum class VulkanDescriptorFor { UNIFORM_BUFFER, COMBINED_IMAGE_SAMPLER, COMPUTE_SHADER };
 	enum class VulkanUBOFor { MODEL, COMPUTE_SHADER };
@@ -61,7 +43,7 @@ namespace my_vulkan
 	struct UniformBufferObject
 	{
 		glm::vec2 foo;  //8
-		alignas(16) glm::mat4 model; //offset 8 //offset of each element must rounded up to a multiple of 16
+		alignas(16) glm::mat4 model; //offset 8 //offset of each element must rounded right to a multiple of 16
 		glm::mat4 view; //offset 8 + 64
 		glm::mat4 proj; //offset 72 + 64
 	};

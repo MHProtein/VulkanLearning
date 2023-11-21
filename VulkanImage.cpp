@@ -1,7 +1,7 @@
 ﻿#include "VulkanImage.h"
 #include "VulkanDevice.h"
 #include "VulkanUtils.h"
-#include "FirstApp.h"
+#include "VulkanContext.h"
 #include <stdexcept>
 
 my_vulkan::VulkanImage::VulkanImage(const std::shared_ptr<my_vulkan::VulkanDevice>& device, uint32_t width,

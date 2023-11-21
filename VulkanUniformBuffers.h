@@ -7,6 +7,7 @@
 
 namespace my_vulkan
 {
+	struct UniformBufferObject;
 	enum class VulkanUBOFor;
 	class VulkanGraphicsPipeline;
 
@@ -18,7 +19,7 @@ namespace my_vulkan
 		
 		void createUniformBuffers(const std::shared_ptr<VulkanDevice>& device, VulkanUBOFor type);
 
-		void updateUniformBuffer(uint32_t currentImage, VkExtent2D swapChainExtent);
+		void updateUniformBuffer(uint32_t currentImage, UniformBufferObject* ubo);
 	
 		std::vector<VkBuffer>& getUniformBuffers() { return uniformBuffers; }
 		std::vector<VkDeviceMemory>& getUniformBuffersMemory() { return uniformBuffersMemory; }
@@ -33,9 +34,6 @@ namespace my_vulkan
 		std::vector<VkBuffer> uniformBuffers;
 		std::vector<VkDeviceMemory> uniformBuffersMemory;
 		std::vector<void*> uniformBuffersMapped;
-		glm::vec2 lastRecordedMousePos;
-		int count;
-		
 	};
 
 

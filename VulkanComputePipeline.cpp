@@ -1,4 +1,7 @@
 #include "VulkanComputePipeline.h"
+
+#include <stdexcept>
+
 #include "VulkanDevice.h"
 #include "VulkanUtils.h"
 

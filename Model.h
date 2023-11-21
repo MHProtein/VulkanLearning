@@ -11,10 +11,10 @@ namespace my_vulkan
 	class VulkanDevice;
 	class Texture;
 
-	class Model
+	class Mesh
 	{
 	public:
-		Model(const std::string& model_path, const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool);
+		Mesh(const std::string& model_path, const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool);
 		void loadModel();
 
 		void createBuffers(const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool);
