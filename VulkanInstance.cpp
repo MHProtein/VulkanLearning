@@ -16,9 +16,9 @@ void my_vulkan::VulkanInstance::createInstance(bool enableValidationLayer, const
 
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.apiVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.apiVersion = VK_MAKE_VERSION(1, 3, 0);
+	appInfo.applicationVersion = VK_MAKE_VERSION(1, 3, 0);
+	appInfo.engineVersion = VK_MAKE_VERSION(1, 3, 0);
 	appInfo.pEngineName = "NONE";
 
 	uint32_t extentionCount;

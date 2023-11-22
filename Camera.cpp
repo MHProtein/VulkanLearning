@@ -21,9 +21,6 @@ my_vulkan::Camera::Camera(float fov, float aspect_ratio, const glm::vec3& positi
 	translateVelocity = 0.01f;
 	rotateVelocity = 1.0f;
 	matrices.perspective = glm::perspective(fov, aspect_ratio, 0.1f, 1000.0f);
-	axis.x = { 1, 0, 0 };
-	axis.y = { 0, 1, 0 };
-	axis.z = { 0, 0, 1 };
 	updateMatrices();
 }
 
@@ -35,9 +32,6 @@ my_vulkan::Camera::Camera(float fov, float aspect_ratio, glm::vec3&& position, g
 	this->rotation = rotation;
 	this->type = type;
 	matrices.perspective = glm::perspective(fov, aspect_ratio, 0.1f, 1000.0f);
-	axis.x = { 1, 0, 0 };
-	axis.y = { 0, 1, 0 };
-	axis.z = { 0, 0, 1 };
 	updateMatrices();
 }
 
@@ -68,15 +62,13 @@ void my_vulkan::Camera::translate(const glm::vec3& delta)
 
 void my_vulkan::Camera::moveForward()
 {
-	orientation *= translateVelocity;
-	translate(orientation);
+	translate(orientation * translateVelocity);
 	updateMatrices();
 }
 
 void my_vulkan::Camera::moveBack()
 {
-	orientation *= translateVelocity;
-	translate(-orientation);
+	translate(-orientation * translateVelocity);
 	updateMatrices();
 }
 
@@ -94,13 +86,13 @@ void my_vulkan::Camera::moveRight()
 
 void my_vulkan::Camera::moveUp()
 {
-	translate(up * translateVelocity);
+	translate(glm::vec3(0, 1, 0) * translateVelocity);
 	updateMatrices();
 }
 
 void my_vulkan::Camera::moveDown()
 {
-	translate(-up * translateVelocity);
+	translate(-glm::vec3(0, 1, 0) * translateVelocity);
 	updateMatrices();
 }
 
@@ -116,9 +108,9 @@ void my_vulkan::Camera::updateMatrices()
 	glm::mat4 transformation_matrix;
 
 	//DONT CHANGE THE FUCKING ORDER
-	rotation_matrix = glm::rotate(rotation_matrix, glm::radians(this->rotation.y) * rotateVelocity, glm::normalize(axis.y));
-	rotation_matrix = glm::rotate(rotation_matrix, glm::radians(this->rotation.z) * rotateVelocity, glm::normalize(axis.z));
-	rotation_matrix = glm::rotate(rotation_matrix, glm::radians(this->rotation.x) * rotateVelocity, glm::normalize(axis.x));
+	rotation_matrix = glm::rotate(rotation_matrix, glm::radians(this->rotation.y) * rotateVelocity, glm::vec3(0, 1, 0));
+	rotation_matrix = glm::rotate(rotation_matrix, glm::radians(this->rotation.z) * rotateVelocity, glm::vec3(0, 0, 1));
+	rotation_matrix = glm::rotate(rotation_matrix, glm::radians(this->rotation.x) * rotateVelocity, glm::vec3(1, 0, 0));
 	transformation_matrix = glm::translate(this->position);
 	matrices.view = glm::inverse(transformation_matrix * rotation_matrix);
 

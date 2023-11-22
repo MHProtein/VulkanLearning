@@ -17,8 +17,9 @@ namespace my_vulkan
 	const uint32_t WIDTH = 1920;
 	const uint32_t HEIGHT = 1080;
 
-	enum class VulkanDescriptorFor { UNIFORM_BUFFER, COMBINED_IMAGE_SAMPLER, COMPUTE_SHADER };
-	enum class VulkanUBOFor { MODEL, COMPUTE_SHADER };
+	enum class VulkanDescriptorFor { VERTEX_SHADER_UNIFORM_BUFFER, FRAGMENT_SHADER_UNIFORM_BUFFER, COMBINED_IMAGE_SAMPLER, COMPUTE_SHADER_UNIFORM_BUFFER
+	};
+	enum class VulkanUBOFor { VERTEX_SHADER, FRAGMENT_SHADER, COMPUTE_SHADER };
 
 	struct QueueFamilyIndices
 	{
@@ -35,24 +36,33 @@ namespace my_vulkan
 		std::vector<VkPresentModeKHR> presentModes;
 	};
 
-	struct ParameterUBO
+	struct UniformBufferObject{ };
+
+	struct ParameterUBO : public UniformBufferObject
 	{
 		float Delta = 1.0f;
 	};
 
-	struct UniformBufferObject
+	struct VertexUniformBufferObject : public UniformBufferObject
 	{
-		glm::vec2 foo;  //8
+		glm::vec2 foo;
 		alignas(16) glm::mat4 model; //offset 8 //offset of each element must rounded right to a multiple of 16
 		glm::mat4 view; //offset 8 + 64
 		glm::mat4 proj; //offset 72 + 64
+	};
+
+	struct FragmentUniformBufferObject : public UniformBufferObject
+	{
+		glm::vec3 ks;
+		alignas(16) glm::vec3 cameraPos;
+		alignas(32) glm::vec3 lightPos;
+		float lightIntensity;
 	};
 
 	struct Particle {
 		glm::vec2 position;
 		glm::vec2 velocity;
 		glm::vec4 color;
-
 	};
 
 	class VulkanUtils

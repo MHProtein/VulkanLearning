@@ -147,14 +147,7 @@ void my_vulkan::VulkanRenderer::recordCommandBuffer(VkCommandBuffer commandBuffe
 
 	for (const auto & object : objects)
 	{
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 0, 1,
-			&object->uniformBuffersDescriptors->getDescriptorSets().at(currentFrame), 0, nullptr);
-		for (int i = 0; i != object->textures.size(); ++i)
-		{
-			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipelineLayout(), 1, 1,
-				&object->textures[i]->descriptor->getDescriptorSets().at(currentFrame), 0, nullptr);
-			object->meshes[i]->Render(commandBuffer);
-		}
+		object->Render(currentFrame, commandBuffer, pipeline->getPipelineLayout());
 	}
 
 	imgui->updateImgui(commandBuffer, objects);

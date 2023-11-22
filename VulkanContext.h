@@ -51,11 +51,11 @@ namespace my_vulkan
 
 
 		const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation", "VK_LAYER_LUNARG_monitor" };
-		const std::vector<const char*> deviceExtensions = { "VK_KHR_swapchain" };
+		const std::vector<const char*> deviceExtensions = { "VK_KHR_swapchain", "VK_KHR_shader_non_semantic_info" };
 
 		VulkanWindow wind{ 1920, 1080, "Vulkan" };
 
-	private:
+
 		std::shared_ptr<VulkanInstance> instance;
 		VkSurfaceKHR surface;
 		VkCommandPool commandPool;

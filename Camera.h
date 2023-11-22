@@ -21,13 +21,6 @@ namespace my_vulkan
 			glm::mat4 view;
 		} matrices;
 
-		struct
-		{
-			glm::vec3 x;
-			glm::vec3 y;
-			glm::vec3 z;
-		} axis;
-
 		Camera(float fov, float aspect_ratio, const glm::vec3& position, const glm::vec3& rotation,
 			CameraType type);
 		Camera(float fov, float aspect_ratio, glm::vec3&& position , glm::vec3&& rotation ,

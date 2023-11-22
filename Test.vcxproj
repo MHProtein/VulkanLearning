@@ -525,6 +525,7 @@
     <ClCompile Include="..\Libraries\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\Libraries\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="Arona.cpp" />
+    <ClCompile Include="BlinnPhongTexture.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ImguiAPI.cpp" />
     <ClCompile Include="PointLight.cpp" />
@@ -558,6 +559,7 @@
     <ClInclude Include="..\Libraries\imgui-master\imstb_textedit.h" />
     <ClInclude Include="..\Libraries\imgui-master\imstb_truetype.h" />
     <ClInclude Include="Arona.h" />
+    <ClInclude Include="BlinnPhongTexture.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ImguiAPI.h" />
     <ClInclude Include="PointLight.h" />

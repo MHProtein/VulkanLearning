@@ -9,8 +9,8 @@ namespace my_vulkan
 	struct Vertex
 	{
 		glm::vec3 pos;
-		glm::vec3 color;
 		glm::vec2 texCoord;
+		glm::vec3 normal;
 
 		static VkVertexInputBindingDescription getBindingDescription()
 		{
@@ -34,22 +34,20 @@ namespace my_vulkan
 
 			attributeDescriptions[1].binding = 0;
 			attributeDescriptions[1].location = 1;
-			attributeDescriptions[1].format = VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
-			attributeDescriptions[1].offset = offsetof(Vertex, color);
+			attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+			attributeDescriptions[1].offset = offsetof(Vertex, texCoord);
 
 			attributeDescriptions[2].binding = 0;
 			attributeDescriptions[2].location = 2;
-			attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-			attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+			attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+			attributeDescriptions[2].offset = offsetof(Vertex, normal);
 
 			return attributeDescriptions;
 		}
 
 		bool operator==(const Vertex& other) const {
-			return pos == other.pos && color == other.color && texCoord == other.texCoord;
+			return pos == other.pos && texCoord == other.texCoord && normal == other.normal;
 		}
-
-		
 	};
 }
 
@@ -59,9 +57,14 @@ namespace std
 	{
 		size_t operator()(my_vulkan::Vertex const& vertex) const
 		{
-			return hash<glm::vec3>()(vertex.pos) ^ 
-				((hash<glm::vec3>()(vertex.color) << 1) >> 1) ^ 
-				(hash<glm::vec2>()(vertex.texCoord) << 1);
+			size_t hashValue = 0;
+
+			// Hash each component using the std::hash function
+			hashValue ^= std::hash<glm::vec3>()(vertex.pos);
+			hashValue ^= std::hash<glm::vec3>()(vertex.normal);
+			hashValue ^= std::hash<glm::vec2>()(vertex.texCoord);
+
+			return hashValue;
 		}
 	};
 }

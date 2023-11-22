@@ -136,36 +136,67 @@ void my_vulkan::VulkanUtils::createIndexBuffer(const std::vector<uint32_t>& indi
 VkDescriptorSetLayout my_vulkan::VulkanUtils::createDescriptorSetLayout(const VkDevice& device,
 	VulkanDescriptorFor layout_type)
 {
-	VkDescriptorSetLayoutBinding LayoutBinding{};
+	std::vector<VkDescriptorSetLayoutBinding> LayoutBinding{};
 	switch (layout_type)
 	{
-	case VulkanDescriptorFor::UNIFORM_BUFFER:
+	case VulkanDescriptorFor::VERTEX_SHADER_UNIFORM_BUFFER:
 	{
-		LayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		LayoutBinding.descriptorCount = 1;
-		LayoutBinding.binding = 0;
-		LayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		LayoutBinding.resize(1);
+		LayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		LayoutBinding[0].descriptorCount = 1;
+		LayoutBinding[0].binding = 0;
+		LayoutBinding[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		break;
+	}
+	case VulkanDescriptorFor::FRAGMENT_SHADER_UNIFORM_BUFFER:
+	{
+		LayoutBinding.resize(1);
+		LayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		LayoutBinding[0].descriptorCount = 1;
+		LayoutBinding[0].binding = 0;
+		LayoutBinding[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 		break;
 	}
 	case VulkanDescriptorFor::COMBINED_IMAGE_SAMPLER:
 	{
-		LayoutBinding.binding = 0;
-		LayoutBinding.descriptorCount = 1;
-		LayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		LayoutBinding.pImmutableSamplers = nullptr;
-		LayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		LayoutBinding.resize(1);
+		LayoutBinding[0].binding = 0;
+		LayoutBinding[0].descriptorCount = 1;
+		LayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		LayoutBinding[0].pImmutableSamplers = nullptr;
+		LayoutBinding[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		break;
+	}
+	case VulkanDescriptorFor::COMPUTE_SHADER_UNIFORM_BUFFER:
+	{
+		LayoutBinding.resize(3);
+		LayoutBinding[0].binding = 0;
+		LayoutBinding[0].descriptorCount = 1;
+		LayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		LayoutBinding[0].pImmutableSamplers = nullptr;
+		LayoutBinding[0].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+		LayoutBinding[1].binding = 1;
+		LayoutBinding[1].descriptorCount = 1;
+		LayoutBinding[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		LayoutBinding[1].pImmutableSamplers = nullptr;
+		LayoutBinding[1].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+
+		LayoutBinding[0].binding = 2;
+		LayoutBinding[0].descriptorCount = 1;
+		LayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		LayoutBinding[0].pImmutableSamplers = nullptr;
+		LayoutBinding[0].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 		break;
 	}
 	default:
 		break;
 	}
 
-	std::array<VkDescriptorSetLayoutBinding, 1> bindings = { LayoutBinding };
-
 	VkDescriptorSetLayoutCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	createInfo.bindingCount = bindings.size();
-	createInfo.pBindings = bindings.data();
+	createInfo.bindingCount = LayoutBinding.size();
+	createInfo.pBindings = LayoutBinding.data();
 
 	VkDescriptorSetLayout descriptorSetLayout;
 

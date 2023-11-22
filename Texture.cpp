@@ -59,7 +59,6 @@ void my_vulkan::Texture::createTextureImage(const std::string& filePath, const s
 
 void my_vulkan::Texture::generateMipmaps(const std::shared_ptr<VulkanDevice>& device, VkCommandPool& commandPool, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
-
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(device->getPhysicalDevice(), textureImage->getImageFormat(), &formatProperties);
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
@@ -175,12 +174,12 @@ void my_vulkan::Texture::createTextureSampler(const std::shared_ptr<VulkanDevice
 
 void my_vulkan::Texture::createDescriptor(const std::shared_ptr<VulkanDevice>& device)
 {
-	descriptor = std::make_shared<VulkanDescriptors>(device, nullptr, textureImage->getImageView(), sampler, VulkanDescriptorFor::COMBINED_IMAGE_SAMPLER);
+	sampleDescriptor = std::make_shared<VulkanDescriptors>(device, nullptr, textureImage->getImageView(), sampler, VulkanDescriptorFor::COMBINED_IMAGE_SAMPLER);
 }
 
 void my_vulkan::Texture::destroyTexture(VkDevice device)
 {
-	descriptor->DestroyVulkanDescriptor(device);
+	sampleDescriptor->DestroyVulkanDescriptor(device);
 	vkDestroySampler(device, sampler, nullptr);
 	textureImage->destroyImage(device);
 }

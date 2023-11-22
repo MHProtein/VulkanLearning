@@ -14,7 +14,7 @@ my_vulkan::PointLight::PointLight(const std::string& name, my_vulkan::VulkanCont
 
 }
 
-void my_vulkan::PointLight::tick(uint32_t currentImage, Camera* camera)
+void my_vulkan::PointLight::tick(uint32_t currentImage, Camera* camera, PointLight* light)
 {
-	Object::tick(currentImage, camera);
+	Object::tick(currentImage, camera, light);
 }

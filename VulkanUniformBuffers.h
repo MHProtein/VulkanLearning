@@ -8,6 +8,7 @@
 namespace my_vulkan
 {
 	struct UniformBufferObject;
+	struct VertexUniformBufferObject;
 	enum class VulkanUBOFor;
 	class VulkanGraphicsPipeline;
 
@@ -34,6 +35,7 @@ namespace my_vulkan
 		std::vector<VkBuffer> uniformBuffers;
 		std::vector<VkDeviceMemory> uniformBuffersMemory;
 		std::vector<void*> uniformBuffersMapped;
+		VkDeviceSize bufferSize;
 	};
 
 

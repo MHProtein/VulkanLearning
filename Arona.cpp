@@ -11,7 +11,7 @@ my_vulkan::Arona::Arona(const std::string& name, my_vulkan::VulkanContext* conte
 
 }
 
-void my_vulkan::Arona::tick(uint32_t currentImage, Camera* camera)
+void my_vulkan::Arona::tick(uint32_t currentImage, Camera* camera, PointLight* light)
 {
-	Object::tick(currentImage, camera);
+	Object::tick(currentImage, camera, light);
 }

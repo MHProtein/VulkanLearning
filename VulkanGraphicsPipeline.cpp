@@ -186,8 +186,9 @@ void my_vulkan::VulkanGraphicsPipeline::createGraphicsPipeline(const VkDevice& d
 	colorBlendStateCreateInfo.logicOpEnable = VK_FALSE;
 
 	std::vector<VkDescriptorSetLayout> layouts;
-	layouts.push_back(VulkanUtils::createDescriptorSetLayout(device, VulkanDescriptorFor::UNIFORM_BUFFER));
+	layouts.push_back(VulkanUtils::createDescriptorSetLayout(device, VulkanDescriptorFor::VERTEX_SHADER_UNIFORM_BUFFER));
 	layouts.push_back(VulkanUtils::createDescriptorSetLayout(device, VulkanDescriptorFor::COMBINED_IMAGE_SAMPLER));
+	layouts.push_back(VulkanUtils::createDescriptorSetLayout(device, VulkanDescriptorFor::FRAGMENT_SHADER_UNIFORM_BUFFER));
 
 	VkPipelineLayoutCreateInfo PipelineLayoutCreateInfo{};
 	PipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

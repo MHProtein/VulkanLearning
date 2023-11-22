@@ -30,7 +30,7 @@ namespace my_vulkan
 		uint32_t mipLevels;
 		std::string name;
 		std::shared_ptr<VulkanImage> textureImage;
-		std::shared_ptr<VulkanDescriptors> descriptor;
+		std::shared_ptr<VulkanDescriptors> sampleDescriptor;
 		VkSampler sampler;
 	};
 

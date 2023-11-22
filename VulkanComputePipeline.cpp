@@ -29,7 +29,7 @@ void my_vulkan::VulkanComputePipeline::createComputePipeline(const std::shared_p
 	if(vkCreateComputePipelines(device->getLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &computePipeline) != VK_SUCCESS)
 		throw std::runtime_error("failed to create compute pipeline!");
 
-	auto setLayout = VulkanUtils::createDescriptorSetLayout(device->getLogicalDevice(), VulkanDescriptorFor::COMPUTE_SHADER);
+	auto setLayout = VulkanUtils::createDescriptorSetLayout(device->getLogicalDevice(), VulkanDescriptorFor::COMPUTE_SHADER_UNIFORM_BUFFER);
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

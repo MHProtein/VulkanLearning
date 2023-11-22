@@ -19,17 +19,19 @@ my_vulkan::VulkanUniformBuffers::VulkanUniformBuffers(const std::shared_ptr<Vulk
 
 void my_vulkan::VulkanUniformBuffers::createUniformBuffers(const std::shared_ptr<VulkanDevice>& device, VulkanUBOFor type)
 {
-	VkDeviceSize bufferSize;
+	bufferSize;
 	switch (type)
 	{
-	case VulkanUBOFor::MODEL :
-		bufferSize = sizeof(UniformBufferObject);
+	case VulkanUBOFor::VERTEX_SHADER :
+		bufferSize = sizeof(VertexUniformBufferObject);
+		break;
+	case VulkanUBOFor::FRAGMENT_SHADER:
+		bufferSize = sizeof(FragmentUniformBufferObject);
 		break;
 	case VulkanUBOFor::COMPUTE_SHADER:
 		bufferSize = sizeof(ParameterUBO);
 		break;
 	}
-
 
 	uniformBuffers.resize(MAX_RENDER_IMAGES);
 	uniformBuffersMemory.resize(MAX_RENDER_IMAGES);
@@ -49,7 +51,7 @@ void my_vulkan::VulkanUniformBuffers::createUniformBuffers(const std::shared_ptr
 
 void my_vulkan::VulkanUniformBuffers::updateUniformBuffer(uint32_t currentImage, UniformBufferObject* ubo)
 {
-	memcpy(uniformBuffersMapped[currentImage], ubo, sizeof(UniformBufferObject));
+	memcpy(uniformBuffersMapped[currentImage], reinterpret_cast<FragmentUniformBufferObject*>(ubo), bufferSize);
 }
 
 void my_vulkan::VulkanUniformBuffers::DestroyVulkanUniformBuffers(const VkDevice& device)
